@@ -22,7 +22,6 @@ jobs:
     steps:
       - name: Call Pre-Commit Checks
         uses: ./.github/workflows/pre-commit-checks-external.yaml
-        secrets: inherit
         with:
           pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
 
