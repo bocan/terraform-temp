@@ -26,10 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pre-commit-check.conclusion == 'success' }}
     steps:
-      - name: Call Pre-Commit Checks
-        with:
-          pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
-
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@v1
         id: tag
