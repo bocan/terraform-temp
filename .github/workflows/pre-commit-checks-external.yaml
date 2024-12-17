@@ -1,0 +1,93 @@
+on:
+  workflow_call:
+    inputs:
+      pre-commit-config-file:
+        description: "Which pre-commit config file to use in workflows repo"
+        default: ".pre-commit-config-modules.yaml"
+        required: false
+        type: string
+
+name: pre-commit-checks
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TOOLS_BASE: .github/scripts
+  PRE_COMMIT_CONFIG_FILE: ${{ inputs.pre-commit-config-file }}
+  GITHUB_USER_TOKEN: ${{ secrets.LZ_DEVOPS_WORKFLOW_PAT }}
+  GITHUB_USER_EMAIL: c.funderburg@mak-system.net
+  GITHUB_USER_NAME: bocan
+
+jobs:
+  pre-commits-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code ( maksystem-platform/workflows )
+        uses: actions/checkout@v4
+        with:
+          repository: maksystem-platform/workflows
+          ref: main
+          token: ${{ env.GITHUB_USER_TOKEN }}
+          persist-credentials: false
+
+      - name: Use centralised tool versions
+        run: |
+          cp -p .tool-versions-modules .tool-versions
+          mv .tool-versions-modules /tmp/.tool-versions-base
+          mv $PRE_COMMIT_CONFIG_FILE /tmp/.pre-commit-config.yaml-base
+
+      - name: Install ASDF
+        uses: asdf-vm/actions/setup@v3
+
+      - name: Restore ASDF tools from cache
+        id: asdf-tools-cache
+        uses: actions/cache@v4
+        with:
+          key: asdf-tools-${{ runner.os }}-${{ hashFiles('.tool-versions') }}
+          restore-keys: |
+            asdf-tools-
+          path: |
+            ${{ env.ASDF_DIR }}/plugins
+            ${{ env.ASDF_DIR }}/installs
+
+      - name: Install ASDF tools on cache miss
+        if: ${{ steps.asdf-tools-cache.outputs.cache-hit != 'true' }}
+        uses: asdf-vm/actions/install@v3
+
+      - name: Reshim installed ASDF tools
+        shell: bash
+        run: asdf reshim
+
+      - name: Checkout Code ( caller repository )
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install repo specific ASDF tools
+        uses: asdf-vm/actions/install@v3
+
+      - name: Reshim installed ASDF tools
+        shell: bash
+        run: asdf reshim
+
+      - name: Configure Git Credentials
+        run: |
+          git config --global url."https://${{ env.GITHUB_USER_TOKEN }}@github.com/".insteadOf ssh://git@github.com/
+          git config --global user.email ${{ env.GITHUB_USER_EMAIL }}
+          git config --global user.name ${{ env.GITHUB_USER_NAME }}
+
+      - name: Configuration files ( used from shared repository )
+        run: |
+          rm -rf ~/.tool-versions $GITHUB_WORKSPACE/.pre-commit-config.yaml &&
+          mv -n /tmp/.tool-versions-base $GITHUB_WORKSPACE/.tool-versions
+          mv /tmp/.pre-commit-config.yaml-base $GITHUB_WORKSPACE/.pre-commit-config.yaml
+          pre-commit --version
+
+      - name: Perform pre-commit Checks
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          pre-commit --version
+          pre-commit install
+          pre-commit run --all-files --show-diff-on-failure

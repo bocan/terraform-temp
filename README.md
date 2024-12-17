@@ -203,7 +203,7 @@ You have the option to pass in the public part of your own SSH key, or the creat
 | <a name="input_launch_template"></a> [launch\_template](#input\_launch\_template) | Specifies a Launch Template to configure the instance. Parameters configured on this resource will override the corresponding parameters in the Launch Template | `map(string)` | `null` | no |
 | <a name="input_maintenance_options"></a> [maintenance\_options](#input\_maintenance\_options) | The maintenance options for the instance | `any` | `{}` | no |
 | <a name="input_metadata_options"></a> [metadata\_options](#input\_metadata\_options) | Customize the metadata options of the instance | `map(string)` | `{}` | no |
-| <a name="input_name"></a> [name](#input\_name) | Name to be used on EC2 instance created blah blah | `string` | `"maksys-instance"` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name to be used on EC2 instance created | `string` | `"maksys-instance"` | no |
 | <a name="input_network_interface"></a> [network\_interface](#input\_network\_interface) | Customize network interfaces to be attached at instance boot time | `list(map(string))` | `[]` | no |
 | <a name="input_output_private_key"></a> [output\_private\_key](#input\_output\_private\_key) | Boolean flag for enabling or disabling output contents of generated private SSH key. | `bool` | `false` | no |
 | <a name="input_private_ip"></a> [private\_ip](#input\_private\_ip) | Private IP address to associate with the instance in a VPC | `string` | `""` | no |
