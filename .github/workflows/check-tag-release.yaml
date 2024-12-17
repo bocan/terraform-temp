@@ -17,16 +17,16 @@ env:
   GITHUB_USER_NAME: bocan
 
 jobs:
+  pre-commit-check:
+    uses: ./.github/workflows/pre-commit-checks-external.yaml
+    secrets: inherit
+    with:
+      pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
   checks-tags-and-release:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pre-commit-check.conclusion == 'success' }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ env.GITHUB_USER_TOKEN }}
-
       - name: Call Pre-Commit Checks
-        uses: ./.github/workflows/pre-commit-checks-external.yaml
         with:
           pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
 
