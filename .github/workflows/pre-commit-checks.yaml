@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   call-pre-commit-checks:
-    uses: maksystem-platform/workflows/.github/workflows/pre-commit-checks.yaml@main
+    uses: .github/workflows/pre-commit-checks-external.yaml
     secrets: inherit
     with:
       pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
