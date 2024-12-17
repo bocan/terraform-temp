@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   call-pre-commit-checks:
-    uses: .github/workflows/pre-commit-checks-external.yaml
+    uses: .github/workflows/pre-commit-checks-external.yaml@CLOUD-12345
     secrets: inherit
     with:
       pre-commit-config-file: ".pre-commit-config-validate-folder.yaml"
