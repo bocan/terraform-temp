@@ -20,6 +20,11 @@ jobs:
   checks-tags-and-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ env.GITHUB_USER_TOKEN }}
+
       - name: Call Pre-Commit Checks
         uses: ./.github/workflows/pre-commit-checks-external.yaml
         with:
