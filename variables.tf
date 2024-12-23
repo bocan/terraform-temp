@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name to be used on EC2 instance created blah blah"
+  description = "Name to be used on EC2 instance created"
   type        = string
   default     = "maksys-instance"
 }
